@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { ImageBackground, View, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
+import * as actionCreators from "../../store/actions/authActions";
 
 // NativeBase Components
 import {
@@ -13,7 +14,8 @@ import {
   Text,
   Left,
   Content,
-  Icon
+  Icon,
+  Footer
 } from "native-base";
 
 // Style
@@ -30,7 +32,11 @@ class CoffeeList extends Component {
       <Button
         light
         transparent
-        onPress={() => navigation.navigate("CoffeeCart")}
+        onPress={() =>
+          navigation.navigate(
+            navigation.getParam("user") ? "CoffeeCart" : "Login"
+          )
+        }
       >
         <Text>
           {navigation.getParam("quantity", 0)}{" "}
@@ -46,11 +52,15 @@ class CoffeeList extends Component {
 
   componenDidMount() {
     this.props.navigation.setParams({ quantity: this.props.quantity });
+    this.props.navigation.setParams({ user: this.props.user });
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.quantity != this.props.quantity) {
+    if (prevProps.quantity !== this.props.quantity) {
       this.props.navigation.setParams({ quantity: this.props.quantity });
+    }
+    if (prevProps.user !== this.props.user) {
+      this.props.navigation.setParams({ user: this.props.user });
     }
   }
 
@@ -81,6 +91,7 @@ class CoffeeList extends Component {
                   <Text style={styles.text}>{shop.name}</Text>
                   <Text note style={styles.text}>
                     {shop.distance}
+                    {this.props.isAuth ? "hi" : "nop"}
                   </Text>
                 </Left>
               </CardItem>
@@ -99,6 +110,17 @@ class CoffeeList extends Component {
     return (
       <Content>
         <List>{ListItems}</List>
+        <Footer transparent>
+          {this.props.user ? (
+            <Button danger onPress={() => this.props.logout()}>
+              <Text>Logout</Text>
+            </Button>
+          ) : (
+            <Button onPress={() => this.props.navigation.navigate("Login")}>
+              <Text>Login</Text>
+            </Button>
+          )}
+        </Footer>
       </Content>
     );
   }
@@ -106,10 +128,14 @@ class CoffeeList extends Component {
 
 const mapStateToProps = state => ({
   coffee: state.coffee,
-  quantity: quantityCounter(state.cart.list)
+  quantity: quantityCounter(state.cart.list),
+  isAuth: state.auth.isAuthenticated,
+  user: state.auth.user
 });
-
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(actionCreators.logout())
+});
 export default connect(
   mapStateToProps,
-  {}
+  mapDispatchToProps
 )(CoffeeList);

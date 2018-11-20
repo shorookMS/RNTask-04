@@ -54,6 +54,7 @@ class CoffeeDetail extends Component {
 
   componenDidMount() {
     this.props.navigation.setParams({ quantity: this.props.quantity });
+    this.props.navigation.setParams({ user: this.props.user });
   }
 
   componentDidUpdate(prevProps) {
@@ -141,7 +142,9 @@ class CoffeeDetail extends Component {
 
 const mapStateToProps = state => ({
   cart: state.cart,
-  quantity: quantityCounter(state.cart.list)
+  quantity: quantityCounter(state.cart.list),
+  isAuth: state.auth.isAuthenticated,
+  user: state.auth.user
 });
 
 const mapActionsToProps = dispatch => ({

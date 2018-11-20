@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { createStackNavigator } from "react-navigation";
+import * as actionCreators from "../../store/actions/authActions";
 
 // NativeBase Components
 import { Container } from "native-base";
@@ -17,7 +18,10 @@ import Nav from "../Navigation";
 class HomePage extends Component {
   componentDidMount() {
     const { coffeeshops } = this.props.coffee;
-    if (!coffeeshops) this.props.getCoffeeShops();
+    if (!coffeeshops) {
+      this.props.getCoffeeShops();
+      this.props.checkForExpiredToken();
+    }
   }
 
   render() {
@@ -33,7 +37,8 @@ const mapStateToProps = state => ({
 });
 
 const mapActionsToProps = dispatch => ({
-  getCoffeeShops: () => dispatch(getCoffeeShops())
+  getCoffeeShops: () => dispatch(getCoffeeShops()),
+  checkForExpiredToken: () => dispatch(actionCreators.checkForExpiredToken())
 });
 
 export default connect(
